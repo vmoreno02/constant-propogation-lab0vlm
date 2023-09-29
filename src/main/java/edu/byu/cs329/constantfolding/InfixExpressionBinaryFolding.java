@@ -6,56 +6,61 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.PrefixExpression;
-import org.eclipse.jdt.core.dom.PrefixExpression.Operator;
+import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.InfixExpression.Operator;
+import org.eclipse.jdt.core.dom.NumberLiteral;
 
 /**
- * Replaces the bang operator preceding a boolean literal with a boolean literal.
+ * Replaces "less than" infix expressions with number literals with a boolean literal.
  */
-public class PrefixExpressionFolding implements Folding {
-
-  public PrefixExpressionFolding() {}
+public class InfixExpressionBinaryFolding implements Folding {
 
   class Visitor extends ASTVisitor {
     public boolean didFold = false;
 
     @Override
-    public void endVisit(PrefixExpression node) {
-      Operator op = node.getOperator();
-      if (op != Operator.NOT) {
+    public void endVisit(InfixExpression node) {
+      Operator operator = node.getOperator();
+      if (operator != Operator.LESS) {
         return;
       }
 
-      ASTNode operand = node.getOperand();
-      if (!(operand instanceof BooleanLiteral)) {
+      ASTNode leftOp = node.getLeftOperand();
+      if (!(leftOp instanceof NumberLiteral)) {
         return;
       }
+      int leftVal = Integer.parseInt(((NumberLiteral) leftOp).getToken());
 
-      boolean val = ((BooleanLiteral) operand).booleanValue();
+      ASTNode rightOp = node.getRightOperand();
+      if (!(rightOp instanceof NumberLiteral)) {
+        return;
+      }
+      int rightVal = Integer.parseInt(((NumberLiteral) rightOp).getToken());
 
-      BooleanLiteral newNode = node.getAST().newBooleanLiteral(!val);
+      BooleanLiteral newNode = node.getAST().newBooleanLiteral(leftVal < rightVal);
       TreeModificationUtils.replaceChildInParent(node, newNode);
       didFold = true;
     }
   }
 
-
   /**
-  * Replaces prefix expressions preceding literals in the tree with the literals.
+  * Replaces infix expressions with two number literals as
+  * operands in the tree with the boolean literals.
   * 
   * <p>Visits the root and any reachable nodes from the root to replace
-  * any PrefixExpression reachable node containing a literal
-  * with the opposite of the literal itself.
+  * any InfixExpression reachable node containing a two number literals
+  * with the evaluation of the infix expression.
   *
   * <p>top := all nodes reachable from root such that each node 
-  *           is a prefix expression that ends
-  *           in a literal
+  *           is an infix expression that contains
+  *           two literals
   * 
   * <p>parents := all nodes such that each one is the parent
   *               of some node in top
   * 
-  * <p>isFoldable(n) :=    isPrefixExpression(n)
-  *                     /\ (   isLiteral(expression(n)))
+  * <p>isFoldable(n) :=    isInfixExpression(n)
+  *                     /\ isLiteral(getLeftOperand(n)) 
+  *                     /\ isLiteral(getRightOperand(n))
   * 
   * <p>literal(n) := if isLiteral(n) then n else literal(expression(n))
   *
@@ -68,7 +73,7 @@ public class PrefixExpressionFolding implements Folding {
   * @ensures forall n in old(top), exists n' in nodes 
   *             fresh(n')
   *          /\ isLiteral(n')
-  *          /\ value(n') == value(!literal(n))
+  *          /\ value(n') == value(eval(n))
   *          /\ parent(n') == parent(n)
   *          /\ children(parent(n')) == (children(parent(n)) setminus {n}) union {n'}
   *   

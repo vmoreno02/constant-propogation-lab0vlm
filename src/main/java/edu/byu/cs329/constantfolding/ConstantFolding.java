@@ -31,7 +31,8 @@ public class ConstantFolding {
     List<Folding> foldingList = List.of(
         new BlockFolding(),
         new ParenthesizedExpressionFolding(),
-        new PrefixExpressionFolding()
+        new PrefixExpressionFolding(),
+        new InfixExpressionBinaryFolding()
     // TODO: add other ways to fold
     );
   
