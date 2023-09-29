@@ -30,7 +30,8 @@ public class ConstantFolding {
     boolean isChanged = true;
     List<Folding> foldingList = List.of(
         new BlockFolding(),
-        new ParenthesizedExpressionFolding()
+        new ParenthesizedExpressionFolding(),
+        new PrefixExpressionFolding()
     // TODO: add other ways to fold
     );
   
