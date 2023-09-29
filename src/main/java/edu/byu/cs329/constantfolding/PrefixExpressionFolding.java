@@ -1,14 +1,13 @@
 package edu.byu.cs329.constantfolding;
 
+import edu.byu.cs329.utils.ExceptionUtils;
+import edu.byu.cs329.utils.TreeModificationUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression.Operator;
-
-import edu.byu.cs329.utils.ExceptionUtils;
-import edu.byu.cs329.utils.TreeModificationUtils;
 
 /**
  * Replaces the bang operator preceding a boolean literal with a boolean literal.
@@ -31,8 +30,8 @@ public class PrefixExpressionFolding implements Folding {
       if (!(operand instanceof BooleanLiteral)) {
         return;
       }
-
-      boolean val = ((BooleanLiteral)operand).booleanValue();
+      
+      boolean val = ((BooleanLiteral) operand).booleanValue();
 
       BooleanLiteral newNode = node.getAST().newBooleanLiteral(!val);
       TreeModificationUtils.replaceChildInParent(node, newNode);
@@ -79,10 +78,10 @@ public class PrefixExpressionFolding implements Folding {
   */
   @Override
   public boolean fold(ASTNode root) {
-      checkRequires(root);
-      Visitor visitor = new Visitor();
-      root.accept(visitor);
-      return visitor.didFold;
+    checkRequires(root);
+    Visitor visitor = new Visitor();
+    root.accept(visitor);
+    return visitor.didFold;
   }
 
   private void checkRequires(final ASTNode root) {
@@ -90,7 +89,7 @@ public class PrefixExpressionFolding implements Folding {
    
     if (!(root instanceof CompilationUnit) && root.getParent() == null) {
       ExceptionUtils.throwRuntimeException(
-        "Non-CompilationUnit root with no parent passed to PrefixExpressionFolding.fold"
+          "Non-CompilationUnit root with no parent passed to PrefixExpressionFolding.fold"
       );
     }
   }
