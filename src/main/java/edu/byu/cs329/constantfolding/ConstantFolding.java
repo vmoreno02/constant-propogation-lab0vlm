@@ -3,7 +3,6 @@ package edu.byu.cs329.constantfolding;
 import edu.byu.cs329.utils.JavaSourceUtils;
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.slf4j.Logger;
@@ -32,8 +31,9 @@ public class ConstantFolding {
         new BlockFolding(),
         new ParenthesizedExpressionFolding(),
         new PrefixExpressionFolding(),
-        new InfixExpressionBinaryFolding()
-    // TODO: add other ways to fold
+        new InfixExpressionBinaryFolding(),
+        new InfixExpressionExtendedFolding(),
+        new IfBooleanLiteralFolding()
     );
   
     while (isChanged == true) {
