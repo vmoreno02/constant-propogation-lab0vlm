@@ -3,8 +3,12 @@ package edu.byu.cs329;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import edu.byu.cs329.constantfolding.ConstantFolding;
 import edu.byu.cs329.constantfolding.Folding;
 import edu.byu.cs329.utils.JavaSourceUtils;
+
+import java.io.File;
 import java.net.URI;
 
 import org.eclipse.jdt.core.dom.ASTMatcher;
@@ -36,5 +40,21 @@ public class TestUtils extends JavaSourceUtils {
     assertFalse(folderUnderTest.fold(root));
     ASTNode expected = getASTNodeFor(t, expectedName);
     assertTrue(expected.subtreeMatch(new ASTMatcher(), root));
+  }
+
+  public static void assertFoldedAll(final Object t, String rootName, String expectedName) {
+    File inputFile = new File(rootName);
+    ASTNode compilationUnit = JavaSourceUtils.getCompilationUnit(inputFile.toURI());
+    compilationUnit = ConstantFolding.fold(compilationUnit);
+    ASTNode expected = getASTNodeFor(t, expectedName);
+    assertTrue(expected.subtreeMatch(new ASTMatcher(), compilationUnit));
+  }
+
+  public static void assertDidNotFoldAll(final Object t, String rootName) {
+    ASTNode expected = getASTNodeFor(t, rootName);
+    File inputFile = new File(rootName);
+    ASTNode compilationUnit = JavaSourceUtils.getCompilationUnit(inputFile.toURI());
+    compilationUnit = ConstantFolding.fold(compilationUnit);
+    assertTrue(expected.subtreeMatch(new ASTMatcher(), compilationUnit));
   }
 }
