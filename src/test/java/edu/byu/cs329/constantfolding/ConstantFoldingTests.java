@@ -27,6 +27,6 @@ public class ConstantFoldingTests {
     @DisplayName("Given not foldable, when fold, then no change")
     void given_notFoldable_when_fold_then_noChange() {
         String name = "foldingInputs/constantFolding/should_notFold.java";
-        TestUtils.assertDidNotFoldAll(this, name, name);
+        TestUtils.assertDidNotFoldAll(this, name);
     }
 }
