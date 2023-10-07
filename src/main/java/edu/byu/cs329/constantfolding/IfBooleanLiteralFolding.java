@@ -30,10 +30,9 @@ public class IfBooleanLiteralFolding implements Folding {
       if (val) {
         statement = ASTNode.copySubtree(node.getAST(), node.getThenStatement());
       } else {
-        if (node.getElseStatement() == null) {
-          statement = ASTNode.copySubtree(node.getAST(), node.getAST().newEmptyStatement());
-        } else {
-          statement = ASTNode.copySubtree(node.getAST(), node.getElseStatement());
+        statement = ASTNode.copySubtree(node.getAST(), node.getElseStatement());
+        if (statement == null) {
+          statement = node.getAST().newBlock();
         }
       }
 
