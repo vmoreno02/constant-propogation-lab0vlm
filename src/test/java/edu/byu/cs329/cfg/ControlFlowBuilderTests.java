@@ -92,6 +92,54 @@ public class ControlFlowBuilderTests {
     );
   }
 
+  // if statement
+  // 1. defined(first(S_Then)) && !isReturn(last(S_Then))
+  // 2. defined(first(S_Then)) && isReturn(last(S_Then))
+  // 3. !defined(first(S_Then))
+  @Test
+  @Tag("IfStatement")
+  @DisplayName("Given first and not return, when build, then link to last and next")
+  void given_firstAndNotReturn_when_build_then_linkToLastAndNext() {
+    String fileName = "cfgInputs/should_LinkLastAndNext_when_FirstAndNotReturn.java";
+    init(fileName);
+    Statement ifStatement = statementTracker.getIfStatement(0);
+    Statement thenStatement = statementTracker.getExpressionStatement(0);
+    Statement expressionStatement = statementTracker.getExpressionStatement(2);
+
+    assertAll(
+      () -> assertTrue(hasEdge(ifStatement, thenStatement)),
+      () -> assertTrue(hasEdge(thenStatement, expressionStatement)));
+  }
+
+  @Test
+  @Tag("IfStatement")
+  @DisplayName("Given first and return, when build, then link to first")
+  void given_firstAndReturn_when_build_then_linkToFirst() {
+    String fileName = "cfgInputs/should_LinkToReturn_when_ThenHasReturn.java";
+    init(fileName);
+    Statement ifStatement = statementTracker.getIfStatement(0);
+    Statement thenStatement = statementTracker.getReturnStatement(0);
+    Statement expressionStatement = statementTracker.getExpressionStatement(0);
+    
+    assertAll(
+      () -> assertTrue(hasEdge(ifStatement, thenStatement)),
+      () -> assertFalse(hasEdge(thenStatement, expressionStatement)));
+  }
+
+  @Test
+  @Tag("IfStatement")
+  @DisplayName("Given not first, when build, then link to next")
+  void given_notFirst_when_build_then_linkToNext() {
+    String fileName = "cfgInputs/should_LinkToNext_when_NoThen.java";
+    init(fileName);
+    Statement ifStatement = statementTracker.getIfStatement(0);
+    Statement returnStatement = statementTracker.getReturnStatement(0);
+    
+    assertAll(
+      () -> assertTrue(hasEdge(ifStatement, returnStatement)),
+      () -> assertTrue(statementTracker.expressionList.size() == 1));
+  }
+
   private boolean hasEdge(Statement source, Statement dest) {
     Set<Statement> successors = controlFlowGraph.getSuccs(source);
     Set<Statement> predecessors = controlFlowGraph.getPreds(dest);
