@@ -42,6 +42,45 @@ public class ReachingDefinitionsBuilderTests {
     );
   }
 
+  @Test
+  @Tag("Shapes")
+  @DisplayName("Given straight line, when build, then entry set of return is var dec")
+  void given_straightLine_when_build_then_entrySetOfReturnIsVarDec() {
+    ControlFlowGraph cfg = MockUtils.newMockForSimpleGraph("x");
+    ReachingDefinitions reachingDefinitions = getReachingDefinitions(cfg);
+    Statement end = cfg.getEnd();
+    Set<Definition> definitions = reachingDefinitions.getReachingDefinitions(end);
+    assertEquals(1, definitions.size());
+    assertTrue(doesDefine("x", definitions));
+  }
+
+  @Test
+  @Tag("Shapes")
+  @DisplayName("Given if statement, when build, then entry set of return is both branches")
+  void given_ifStatement_when_build_then_entrySetOfReturnIsBothBranches() {
+    ControlFlowGraph cfg = MockUtils.newMockForIfStatementGraph("x", 2, "y", 5);
+    ReachingDefinitions reachingDefinitions = getReachingDefinitions(cfg);
+    Statement end = cfg.getEnd();
+    Set<Definition> definitions = reachingDefinitions.getReachingDefinitions(end);
+    assertEquals(2, definitions.size());
+    assertAll( 
+        () -> assertTrue(doesDefine("x", definitions)),
+        () -> assertTrue(doesDefine("y", definitions))
+    );
+  }
+
+  @Test
+  @Tag("Shapes")
+  @DisplayName("Given loop, when build, then entry set of return is first loop statement")
+  void given_loop_when_build_then_entrySetOfReturnIsFirstLoopStatement() {
+    ControlFlowGraph cfg = MockUtils.newMockForWhileStatementGraph("x", 2);
+    ReachingDefinitions reachingDefinitions = getReachingDefinitions(cfg);
+    Statement end = cfg.getEnd();
+    Set<Definition> definitions = reachingDefinitions.getReachingDefinitions(end);
+    assertEquals(1, definitions.size());
+    assertTrue(doesDefine("x", definitions));
+  }
+
   private boolean doesDefine(String name, final Set<Definition> definitions) {
     for (Definition definition : definitions) {
       if (definition.name.getIdentifier().equals(name) && definition.statement == null) {
