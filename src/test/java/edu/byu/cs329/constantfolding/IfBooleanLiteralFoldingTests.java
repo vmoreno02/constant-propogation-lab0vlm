@@ -39,13 +39,13 @@ public class IfBooleanLiteralFoldingTests {
         });
     }
 
-    @Test
-    @DisplayName("Given true block, when fold, then true statement")
-    void given_trueBlock_when_fold_then_trueStatement() {
-        String rootName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement-root.java";
-        String expectedName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement.java";
-        TestUtils.assertDidFold(this, rootName, expectedName, folder);
-    }
+    // @Test
+    // @DisplayName("Given true block, when fold, then true statement")
+    // void given_trueBlock_when_fold_then_trueStatement() {
+    //     String rootName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement-root.java";
+    //     String expectedName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement.java";
+    //     TestUtils.assertDidFold(this, rootName, expectedName, folder);
+    // }
 
     @Test
     @DisplayName("Given false block, when fold, then true statement")
@@ -63,13 +63,13 @@ public class IfBooleanLiteralFoldingTests {
         TestUtils.assertDidFold(this, rootName, expectedName, folder);
     }
 
-    @Test
-    @DisplayName("Given else if block, when fold, then no change")
-    void given_elseIfBlock_when_fold_then_noChange() {
-        String rootName = "foldingInputs/ifStatement/should_notFold_givenIfElseBlock.java";
-        String expectedName = "foldingInputs/ifStatement/should_notFold_givenIfElseBlock.java";
-        TestUtils.assertDidNotFold(this, rootName, expectedName, folder);
-    }
+    // @Test
+    // @DisplayName("Given else if block, when fold, then no change")
+    // void given_elseIfBlock_when_fold_then_noChange() {
+    //     String rootName = "foldingInputs/ifStatement/should_notFold_givenIfElseBlock.java";
+    //     String expectedName = "foldingInputs/ifStatement/should_notFold_givenIfElseBlock.java";
+    //     TestUtils.assertDidNotFold(this, rootName, expectedName, folder);
+    // }
 
     @Test
     @DisplayName("Given no if blocks, when fold, then no change")

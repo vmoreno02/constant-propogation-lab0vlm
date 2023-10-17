@@ -3,7 +3,6 @@ package edu.byu.cs329.rd;
 import edu.byu.cs329.cfg.ControlFlowGraph;
 import edu.byu.cs329.rd.ReachingDefinitions.Definition;
 import edu.byu.cs329.utils.AstNodePropertiesUtils;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -49,11 +47,10 @@ public class ReachingDefinitionsBuilder {
   }
 
   private ReachingDefinitions computeReachingDefinitions(ControlFlowGraph cfg) {
-    Set<Definition> parameterDefinitions = createParameterDefinitions(cfg.getMethodDeclaration());
-    entrySetMap = new HashMap<Statement, Set<Definition>>();
     exitSetMap = new HashMap<Statement, Set<Definition>>();
     genSetMap = new HashMap<Statement, Set<Definition>>();
-    
+    entrySetMap = new HashMap<Statement, Set<Definition>>();
+    Set<Definition> parameterDefinitions = createParameterDefinitions(cfg.getMethodDeclaration());
     Statement start = cfg.getStart();
     entrySetMap.put(start, parameterDefinitions);
     
@@ -85,7 +82,7 @@ public class ReachingDefinitionsBuilder {
     Deque<Statement> d = new ArrayDeque<Statement>();
     d.push(cfg.getStart());
 
-    while(!d.isEmpty()) {
+    while (!d.isEmpty()) {
       Statement stmt = d.pop();
       Set<Definition> entrySet = unionOverPredecessors(stmt, cfg);
       entrySetMap.put(stmt, entrySet);
@@ -134,9 +131,9 @@ public class ReachingDefinitionsBuilder {
       
       if (statement instanceof VariableDeclarationStatement) {
         simpleName = AstNodePropertiesUtils.getSimpleName((VariableDeclarationStatement) statement);
-      }
-      else {
-        simpleName = AstNodePropertiesUtils.getSimpleName((Assignment) ((ExpressionStatement) statement).getExpression());
+      } else {
+        simpleName = AstNodePropertiesUtils.getSimpleName((Assignment) 
+        ((ExpressionStatement) statement).getExpression());
       }
 
       for (Definition definition : exitSet) {
@@ -149,22 +146,25 @@ public class ReachingDefinitionsBuilder {
   }
 
   private boolean isRelevantStatement(Statement statement) {
-    return (statement instanceof VariableDeclarationStatement ||
-    (statement instanceof ExpressionStatement && 
-    ((ExpressionStatement)statement).getExpression() instanceof Assignment));
+    return (statement instanceof VariableDeclarationStatement 
+      || (statement instanceof ExpressionStatement 
+      && 
+      ((ExpressionStatement) statement).getExpression() instanceof Assignment));
   }
 
   private void computeGenSets(Statement start, ControlFlowGraph cfg) {
     if (!genSetMap.containsKey(start)) {
       if (start instanceof VariableDeclarationStatement) {
         Definition definition = new Definition();
-        definition.name = AstNodePropertiesUtils.getSimpleName((VariableDeclarationStatement) start);
+        definition.name = AstNodePropertiesUtils.getSimpleName(
+          (VariableDeclarationStatement) start);
         definition.statement = start;
         genSetMap.put(start, new HashSet<>(Arrays.asList(definition)));
       } else if (start instanceof ExpressionStatement) {
         if (((ExpressionStatement) start).getExpression() instanceof Assignment) {
           Definition definition = new Definition();
-          definition.name = AstNodePropertiesUtils.getSimpleName(((Assignment) ((ExpressionStatement) start).getExpression()));
+          definition.name = AstNodePropertiesUtils.getSimpleName(((Assignment) 
+          ((ExpressionStatement) start).getExpression()));
           definition.statement = start;
           genSetMap.put(start, new HashSet<>(Arrays.asList(definition)));
         }
