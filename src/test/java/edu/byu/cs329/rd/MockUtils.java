@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -51,18 +48,16 @@ public class MockUtils {
 
   public static ControlFlowGraph newMockForSimpleGraph(String name) {
     ControlFlowGraph cfg = mock(ControlFlowGraph.class);
-    Statement start = mock(Statement.class);
+    MethodDeclaration methodDeclarion = mock(MethodDeclaration.class);
     VariableDeclarationStatement varDec = newMockForVariableDeclarationStatement(name);
     Statement end = mock(Statement.class);
 
     Set<Statement> preds = new HashSet<>(Arrays.asList(varDec));
     Set<Statement> succs = new HashSet<>(Arrays.asList(end));
-    Set<Statement> preds2 = new HashSet<>(Arrays.asList(start));
 
-    when(cfg.getStart()).thenReturn(start);
+    when(cfg.getMethodDeclaration()).thenReturn(methodDeclarion);
+    when(cfg.getStart()).thenReturn(varDec);
     when(cfg.getEnd()).thenReturn(end);
-    when(cfg.getSuccs(start)).thenReturn(preds);
-    when(cfg.getPreds(varDec)).thenReturn(preds2);
     when(cfg.getPreds(end)).thenReturn(preds);
     when(cfg.getSuccs(varDec)).thenReturn(succs);
     return cfg;
@@ -82,8 +77,9 @@ public class MockUtils {
 
   public static ControlFlowGraph newMockForIfStatementGraph(String nameTrue, int valTrue, String nameFalse, int valFalse) {
     ControlFlowGraph cfg = mock(ControlFlowGraph.class);
-    Statement start = mock(Statement.class);
+    VariableDeclarationStatement start = newMockForVariableDeclarationStatement(nameTrue);
     Statement end = mock(Statement.class);
+    MethodDeclaration methodDeclarion = mock(MethodDeclaration.class);
     ExpressionStatement exp1 = newMockForExpressionStatement(nameTrue, valTrue, Operator.ASSIGN);
     ExpressionStatement exp2 = newMockForExpressionStatement(nameFalse, valFalse, Operator.ASSIGN);
 
@@ -91,6 +87,7 @@ public class MockUtils {
     Set<Statement> ifPreds = new HashSet<>(Arrays.asList(start));
     Set<Statement> ifSuccs = new HashSet<>(Arrays.asList(end));
     
+    when(cfg.getMethodDeclaration()).thenReturn(methodDeclarion);
     when(cfg.getStart()).thenReturn(start);
     when(cfg.getEnd()).thenReturn(end);
     when(cfg.getSuccs(start)).thenReturn(startSuccs);
@@ -104,13 +101,15 @@ public class MockUtils {
 
   public static ControlFlowGraph newMockForWhileStatementGraph(String name, int val) {
     ControlFlowGraph cfg = mock(ControlFlowGraph.class);
-    Statement start = mock(Statement.class);
+    VariableDeclarationStatement start = newMockForVariableDeclarationStatement(name);
     Statement end = mock(Statement.class);
+    MethodDeclaration methodDeclarion = mock(MethodDeclaration.class);
     ExpressionStatement whileStatement = newMockForExpressionStatement(name, val, Operator.PLUS_ASSIGN);
 
     Set<Statement> startSuccs = new HashSet<>(Arrays.asList(whileStatement, end));
     Set<Statement> whilePredsSuccs = new HashSet<>(Arrays.asList(start));
 
+    when(cfg.getMethodDeclaration()).thenReturn(methodDeclarion);
     when(cfg.getStart()).thenReturn(start);
     when(cfg.getEnd()).thenReturn(end);
     when(cfg.getSuccs(start)).thenReturn(startSuccs);

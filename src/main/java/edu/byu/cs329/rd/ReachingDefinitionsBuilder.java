@@ -97,7 +97,10 @@ public class ReachingDefinitionsBuilder {
       }
 
       exitSetMap.put(stmt, exitSet);
-      d.addAll(cfg.getSuccs(stmt));
+      Set<Statement> succs = cfg.getSuccs(stmt);
+      if (succs != null) {
+        d.addAll(cfg.getSuccs(stmt));
+      }
     }
   }
 
@@ -117,9 +120,11 @@ public class ReachingDefinitionsBuilder {
       entrySet = new HashSet<>();
     }
 
-    for (Statement pred : preds) {
-      Set<Definition> exitSetPred = exitSetMap.get(pred);
-      entrySet.addAll(exitSetPred);
+    if (preds != null) {
+      for (Statement pred : preds) {
+        Set<Definition> exitSetPred = exitSetMap.get(pred);
+        entrySet.addAll(exitSetPred);
+      }
     }
 
     return entrySet;
@@ -136,9 +141,14 @@ public class ReachingDefinitionsBuilder {
         ((ExpressionStatement) statement).getExpression());
       }
 
-      for (Definition definition : exitSet) {
-        if (simpleName.getIdentifier().equals(definition.name.getIdentifier())) {
-          exitSet.remove(definition);
+      // comparator problem
+      if (exitSet != null) {
+        Set<Definition> temp = new HashSet<>();
+        temp.addAll(exitSet);
+        for (Definition definition : temp) {
+          if (simpleName.getIdentifier().equals(definition.name.getIdentifier())) {
+            exitSet.remove(definition);
+          }
         }
       }
     }
@@ -172,8 +182,11 @@ public class ReachingDefinitionsBuilder {
         genSetMap.put(start, new HashSet<>());
       }
 
-      for (Statement succ : cfg.getSuccs(start)) {
-        computeGenSets(succ, cfg);
+      Set<Statement> succs = cfg.getSuccs(start);
+      if (succs != null) {
+        for (Statement succ : succs) {
+          computeGenSets(succ, cfg);
+        }
       }
     }
   }
@@ -181,8 +194,11 @@ public class ReachingDefinitionsBuilder {
   private void computeExitSets(Statement stmt, ControlFlowGraph cfg) {
     if (!exitSetMap.containsKey(stmt)) {
       exitSetMap.put(stmt, new HashSet<>());
-      for (Statement succ : cfg.getSuccs(stmt)) {
-        computeExitSets(succ, cfg);
+      Set<Statement> succs = cfg.getSuccs(stmt);
+      if (succs != null) {
+        for (Statement succ : succs) {
+          computeExitSets(succ, cfg);
+        }
       }
     }
   }
