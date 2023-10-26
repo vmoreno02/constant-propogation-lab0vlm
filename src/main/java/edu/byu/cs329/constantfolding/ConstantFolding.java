@@ -18,6 +18,11 @@ import org.slf4j.LoggerFactory;
 public class ConstantFolding {
 
   static final Logger log = LoggerFactory.getLogger(ConstantFolding.class);
+  static boolean isChanged = true;
+
+  public static boolean isChanged() {
+    return isChanged;
+  }
 
   /**
    * Performs constant folding.
@@ -26,7 +31,7 @@ public class ConstantFolding {
    * @return The root ASTNode for the constant folded version of the input.
    */
   public static ASTNode fold(ASTNode compilationUnit) {
-    boolean isChanged = true;
+    isChanged = true;
     List<Folding> foldingList = List.of(
         new BlockFolding(),
         new ParenthesizedExpressionFolding(),

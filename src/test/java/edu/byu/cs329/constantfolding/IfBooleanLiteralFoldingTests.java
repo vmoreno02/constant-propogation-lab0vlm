@@ -39,13 +39,13 @@ public class IfBooleanLiteralFoldingTests {
         });
     }
 
-    // @Test
-    // @DisplayName("Given true block, when fold, then true statement")
-    // void given_trueBlock_when_fold_then_trueStatement() {
-    //     String rootName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement-root.java";
-    //     String expectedName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement.java";
-    //     TestUtils.assertDidFold(this, rootName, expectedName, folder);
-    // }
+    @Test
+    @DisplayName("Given true block, when fold, then true statement")
+    void given_trueBlock_when_fold_then_trueStatement() {
+        String rootName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement-root.java";
+        String expectedName = "foldingInputs/ifStatement/should_fold_givenTrueIfStatement.java";
+        TestUtils.assertDidFold(this, rootName, expectedName, folder);
+    }
 
     @Test
     @DisplayName("Given false block, when fold, then true statement")

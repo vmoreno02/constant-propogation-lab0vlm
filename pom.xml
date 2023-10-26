@@ -153,8 +153,7 @@
 						<argument>--disable-banner</argument>
 						<argument>--class-path=${project.build.testOutputDirectory}</argument>
 						<argument>--scan-classpath</argument>
-						<argument>--include-package=edu.byu.cs329.cfg</argument>
-    					<argument>--include-package=edu.byu.cs329.rd</argument>
+						<argument>--include-package=edu.byu.cs329.constantpropagation</argument>
 					</arguments>
 				</configuration>
 			</plugin>

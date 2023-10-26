@@ -140,18 +140,21 @@ public class ControlFlowGraphBuilder {
     public boolean visit(IfStatement node) {
       Set<Statement> set = getStatements(edges, node);
       Statement nextStatement = set.iterator().next();
-      edges.remove(node); 
 
-      Block block = (Block) (node.getThenStatement());
-      List<Statement> statementList = getStatementList(block.statements());
-      insertStatementList(node, statementList, nextStatement);
+      Block block = null;
+      List<Statement> statementList = null;
 
       Statement elseStatement = node.getElseStatement();
       if (elseStatement != null) {
+        edges.remove(node);
         block = (Block) (elseStatement);
         statementList = getStatementList(block.statements());
         insertStatementList(node, statementList, nextStatement);
       }
+
+      block = (Block) (node.getThenStatement());
+      statementList = getStatementList(block.statements());
+      insertStatementList(block, statementList, nextStatement);
 
       return true;
     }
